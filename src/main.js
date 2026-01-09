@@ -136,5 +136,39 @@ const aboutAnimation = () => {
     });
 };
 
-benefitsAnimation();
+    benefitsAnimation();
+    const innovationsAnimation = () => {
+    // Появление текста
+    gsap.from('.innovations__info', {
+        scrollTrigger: {
+            trigger: '.innovations',
+            start: 'top 70%',
+        },
+        x: -50,
+        opacity: 0,
+        duration: 1,
+        ease: 'power3.out'
+    });
+
+    // Анимация появления карточек стека
+    gsap.from('.tech-card', {
+        scrollTrigger: {
+            trigger: '.innovations__visual',
+            start: 'top 60%',
+        },
+        scale: 0.8,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: 'back.out(1.7)'
+    });
+
+    // Эффект парения (Floating)
+    gsap.to('.tech-card--1', { y: 15, duration: 3, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+    gsap.to('.tech-card--2', { y: -20, duration: 4, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 0.5 });
+    gsap.to('.tech-card--3', { y: 10, duration: 3.5, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 1 });
+    gsap.to('.tech-card--4', { y: -15, duration: 4.5, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 0.2 });
+};
+
+innovationsAnimation();
 });
