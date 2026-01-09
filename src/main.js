@@ -76,4 +76,37 @@ document.addEventListener('DOMContentLoaded', () => {
     tl.call(() => {
         splitTitle.revert();
     });
+    // В самое начало script.js (если еще не добавили)
+gsap.registerPlugin(ScrollTrigger);
+
+// Добавьте этот код внутрь обработчика DOMContentLoaded
+const aboutAnimation = () => {
+    // Анимация заголовка и текста
+    gsap.from('.about__header, .about__main-text', {
+        scrollTrigger: {
+            trigger: '.about',
+            start: 'top 70%',
+        },
+        y: 50,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.2,
+        ease: 'power3.out'
+    });
+
+    // Поэтапное появление карточек
+    gsap.from('.about-card', {
+        scrollTrigger: {
+            trigger: '.about__grid',
+            start: 'top 80%',
+        },
+        y: 60,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: 'back.out(1.7)'
+    });
+};
+
+aboutAnimation();
 });
