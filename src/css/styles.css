@@ -1206,3 +1206,70 @@ a {
         padding: 30px;
     }
 }
+/* Начальное состояние для анимации через JS */
+.innovation-item {
+    opacity: 0;
+    transform: translateX(-30px);
+    will-change: transform, opacity;
+}
+
+/* Стили для иконок в списке, чтобы они не пропадали */
+.innovation-item i {
+    flex-shrink: 0;
+    display: inline-block;
+    min-width: 24px;
+    min-height: 24px;
+}
+/* Безопасное состояние: элементы видны, если JS не сработал */
+.innovation-item,
+.tech-card,
+.blog-card {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Ограничиваем высоту изображений в блоге, чтобы карточки не схлопывались */
+.blog-card__image img {
+    min-height: 240px;
+    background: #f0f0f0;
+    /* Цвет-заглушка на время загрузки */
+}
+
+/* Фикс для иконок Lucide — задаем им размер, чтобы они не были 0x0 */
+svg.lucide {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+}
+/* ФИКС РАЗРЫВА СЛОВ */
+.hero__title {
+    word-break: normal;
+    overflow-wrap: normal;
+    white-space: normal;
+}
+
+/* Эти классы добавляет SplitType автоматически */
+.hero__title .word {
+    white-space: nowrap;
+    /* Запрещает разрывать слово на части */
+    display: inline-block;
+}
+
+/* ФИКС ВИДИМОСТИ (Удаляем opacity: 0 из CSS) */
+/* Теперь все элементы по умолчанию ВИДИМЫ. JS скроет их сам перед анимацией. */
+.innovation-item,
+.tech-card,
+.blog-card,
+.benefit-card,
+.hero__title,
+.hero__tag,
+.hero__description {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Исправляем возможный конфликт с контейнером заголовка */
+.split-type {
+    padding-bottom: 0.1em;
+    margin-bottom: -0.1em;
+}
