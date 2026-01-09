@@ -1,140 +1,121 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 0. Сразу инициализируем иконки
+    // 0. ИНИЦИАЛИЗАЦИЯ ИКОНОК
     const refreshIcons = () => window.lucide && window.lucide.createIcons();
     refreshIcons();
 
-    // 1. Проверка библиотек
-    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-        console.warn("GSAP/ScrollTrigger не найден.");
-        return;
-    }
-    gsap.registerPlugin(ScrollTrigger);
+    // 1. МОБИЛЬНОЕ МЕНЮ
+    const initMenu = () => {
+        const burger = document.getElementById('burger');
+        const nav = document.getElementById('nav');
+        if (!burger || !nav) return;
 
-    // 2. ФУНКЦИЯ СКРЫТИЯ (Вместо CSS)
-    // Мы скрываем элементы через JS, чтобы не было "вечной невидимости"
-    const hideForAnimation = () => {
-        gsap.set('.innovation-item, .tech-card, .blog-card, .benefit-card', { 
-            opacity: 0, 
-            y: 30 
-        });
-    };
-    hideForAnimation();
-
-    // 3. HERO СЕКЦИЯ (С фиксом разрыва слов)
-    const initHero = () => {
-        const title = document.querySelector('.hero__title');
-        if (!title) return;
-
-        const tl = gsap.timeline({ defaults: { ease: 'power4.out', duration: 1.2 } });
-
-        if (typeof SplitType !== 'undefined') {
-            // Инициализация SplitType
-            const text = new SplitType(title, { types: 'words, chars' });
-            
-            // Скрываем заголовок перед анимацией
-            gsap.set(text.chars, { opacity: 0, y: 50 });
-
-            tl.to(text.chars, { 
-                y: 0, 
-                opacity: 1, 
-                stagger: 0.02, 
-                rotateX: 0 
-            })
-            .from('.hero__tag', { y: 20, opacity: 0 }, 0.2)
-            .from('.hero__description', { y: 20, opacity: 0 }, 0.4)
-            .from('.hero__actions', { y: 20, opacity: 0 }, 0.6)
-            .from('.hero__visual', { scale: 0.9, opacity: 0 }, 0.5);
-        } else {
-            // Запасной вариант без SplitType
-            tl.from(title, { y: 30, opacity: 0 });
-        }
-    };
-    initHero();
-
-    // 4. УНИВЕРСАЛЬНАЯ ПОДГРУЗКА ДЛЯ ВСЕХ СЕКЦИЙ
-    const setupScrollAnims = () => {
-        // AI Решения (Списки и карточки)
-        const innovItems = document.querySelectorAll('.innovation-item');
-        if (innovItems.length > 0) {
-            gsap.to(innovItems, {
-                scrollTrigger: {
-                    trigger: '.innovations',
-                    start: 'top 85%',
-                },
-                x: 0,
-                y: 0,
-                opacity: 1,
-                stagger: 0.1,
-                duration: 0.8,
-                onComplete: refreshIcons
-            });
-        }
-
-        const techCards = document.querySelectorAll('.tech-card');
-        if (techCards.length > 0) {
-            gsap.to(techCards, {
-                scrollTrigger: {
-                    trigger: '.innovations__visual',
-                    start: 'top 75%',
-                },
-                scale: 1,
-                opacity: 1,
-                stagger: 0.2,
-                duration: 1,
-                ease: 'back.out(1.7)'
-            });
-        }
-
-        // Блог (Инсайты)
-        const blogCards = document.querySelectorAll('.blog-card');
-        if (blogCards.length > 0) {
-            gsap.to(blogCards, {
-                scrollTrigger: {
-                    trigger: '.blog__grid',
-                    start: 'top 85%',
-                },
-                y: 0,
-                opacity: 1,
-                stagger: 0.2,
-                duration: 0.8
-            });
-        }
-        
-        // Преимущества
-        const benefitCards = document.querySelectorAll('.benefit-card');
-        if (benefitCards.length > 0) {
-            gsap.to(benefitCards, {
-                scrollTrigger: {
-                    trigger: '.benefits__grid',
-                    start: 'top 85%',
-                },
-                y: 0,
-                opacity: 1,
-                stagger: 0.1,
-                duration: 0.8
-            });
-        }
-    };
-    setupScrollAnims();
-
-    // 5. ЛОГИКА МЕНЮ
-    const burger = document.getElementById('burger');
-    const nav = document.getElementById('nav');
-    if (burger && nav) {
         burger.addEventListener('click', () => {
             burger.classList.toggle('active');
             nav.classList.toggle('active');
             document.body.style.overflow = nav.classList.contains('active') ? 'hidden' : '';
         });
-    }
 
-    // 6. ПАВАНИЕ КАРТОЧЕК (Постоянное)
-    gsap.to('.tech-card', {
-        y: "-=15",
-        duration: 3,
-        repeat: -1,
-        yoyo: true,
-        ease: 'sine.inOut',
-        stagger: { each: 0.5, from: "random" }
-    });
+        // Закрытие при клике на ссылки
+        nav.querySelectorAll('.nav__link').forEach(link => {
+            link.addEventListener('click', () => {
+                burger.classList.remove('active');
+                nav.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+    };
+
+    // 2. COOKIE POPUP
+    const initCookies = () => {
+        const popup = document.getElementById('cookie-popup');
+        const acceptBtn = document.getElementById('cookie-accept');
+        
+        if (!popup || !acceptBtn) return;
+
+        // Показываем, если еще не принимали
+        if (!localStorage.getItem('flux_cookies_accepted')) {
+            setTimeout(() => popup.classList.add('active'), 2000);
+        }
+
+        acceptBtn.addEventListener('click', () => {
+            localStorage.setItem('flux_cookies_accepted', 'true');
+            popup.classList.remove('active');
+        });
+    };
+
+    // 3. КАПЧА И ФОРМА (БЕЗОПАСНАЯ ВЕРСИЯ)
+    const initForm = () => {
+        const form = document.getElementById('contact-form');
+        let correctAnswer = 0;
+
+        const genCaptcha = () => {
+            const q = document.getElementById('captcha-question');
+            if (!q) return;
+            const n1 = Math.floor(Math.random() * 10) + 1;
+            const n2 = Math.floor(Math.random() * 10) + 1;
+            correctAnswer = n1 + n2;
+            q.textContent = `${n1} + ${n2}`;
+        };
+
+        if (form) {
+            genCaptcha();
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const userAns = parseInt(document.getElementById('captcha-answer').value);
+                
+                if (userAns !== correctAnswer) {
+                    alert('Неверная капча!');
+                    genCaptcha();
+                    return;
+                }
+
+                // Ищем кнопку внутри формы (безопасно)
+                const btn = this.querySelector('button[type="submit"]');
+                if (btn) {
+                    btn.disabled = true;
+                    const span = btn.querySelector('span');
+                    if (span) span.textContent = 'Отправка...';
+                }
+
+                setTimeout(() => {
+                    this.innerHTML = `<div style="text-align:center; padding:30px;"><h3>Успешно!</h3><p>Мы свяжемся с вами.</p></div>`;
+                }, 1500);
+            });
+        }
+    };
+
+    // 4. GSAP И ПОДГРУЗКА ЭЛЕМЕНТОВ
+    const initAnimations = () => {
+        if (typeof gsap === 'undefined') return;
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Фикс разрыва слов в Hero
+        const h1 = document.querySelector('.hero__title');
+        if (h1 && typeof SplitType !== 'undefined') {
+            const text = new SplitType(h1, { types: 'words, chars' });
+            gsap.from(text.chars, { opacity: 0, y: 30, stagger: 0.02, duration: 1 });
+        }
+
+        // Подгрузка глубинных элементов (теперь они точно появятся)
+        const reveal = (targets, trigger) => {
+            if (document.querySelector(targets)) {
+                gsap.from(targets, {
+                    scrollTrigger: { trigger: trigger, start: "top 85%" },
+                    y: 40, opacity: 0, stagger: 0.15, duration: 1,
+                    onComplete: refreshIcons
+                });
+            }
+        };
+
+        reveal('.innovation-item', '.innovations');
+        reveal('.tech-card', '.innovations__visual');
+        reveal('.blog-card', '.blog__grid');
+        reveal('.benefit-card', '.benefits__grid');
+    };
+
+    // ЗАПУСК ВСЕХ МОДУЛЕЙ
+    initMenu();
+    initCookies();
+    initForm();
+    initAnimations();
 });
