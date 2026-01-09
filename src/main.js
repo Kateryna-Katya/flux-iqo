@@ -185,5 +185,70 @@ const aboutAnimation = () => {
     });
 };
 
-blogAnimation();
+    blogAnimation();
+    const formLogic = () => {
+    const form = document.getElementById('contact-form');
+    const phoneInput = document.getElementById('phone');
+    const captchaLabel = document.getElementById('captcha-question');
+    const successMessage = document.getElementById('form-success');
+
+    // 1. Генерация капчи
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    const correctAnswer = num1 + num2;
+    if(captchaLabel) captchaLabel.textContent = `${num1} + ${num2}`;
+
+    // 2. Валидация телефона (только цифры)
+    phoneInput.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/[^\d+]/g, '');
+    });
+
+    // 3. Обработка отправки
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const userAnswer = parseInt(document.getElementById('captcha-answer').value);
+
+        if (userAnswer !== correctAnswer) {
+            alert('Ошибка в капче. Попробуйте снова.');
+            return;
+        }
+
+        // Имитация AJAX
+        const submitBtn = form.querySelector('button');
+        submitBtn.disabled = true;
+        submitBtn.querySelector('span').textContent = 'Отправка...';
+
+        setTimeout(() => {
+            form.style.display = 'none';
+            successMessage.classList.add('active');
+            
+            // GSAP анимация успеха
+            gsap.from(successMessage, { opacity: 0, scale: 0.9, duration: 0.5 });
+        }, 1500);
+    });
+};
+
+formLogic();
+
+// GSAP анимация секции
+gsap.from('.contact__info', {
+    scrollTrigger: {
+        trigger: '.contact',
+        start: 'top 70%',
+    },
+    x: -30,
+    opacity: 0,
+    duration: 1
+});
+
+gsap.from('.contact__form-wrapper', {
+    scrollTrigger: {
+        trigger: '.contact',
+        start: 'top 70%',
+    },
+    x: 30,
+    opacity: 0,
+    duration: 1
+});
 });
