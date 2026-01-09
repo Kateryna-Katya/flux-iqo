@@ -108,5 +108,33 @@ const aboutAnimation = () => {
     });
 };
 
-aboutAnimation();
+    aboutAnimation();
+    const benefitsAnimation = () => {
+    // Анимация верхней части
+    gsap.from('.benefits__top', {
+        scrollTrigger: {
+            trigger: '.benefits',
+            start: 'top 80%',
+        },
+        y: 40,
+        opacity: 0,
+        duration: 1,
+        ease: 'power3.out'
+    });
+
+    // Анимация карточек по очереди (stagger)
+    gsap.from('.benefit-card', {
+        scrollTrigger: {
+            trigger: '.benefits__grid',
+            start: 'top 75%',
+        },
+        y: 60,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: 'power2.out'
+    });
+};
+
+benefitsAnimation();
 });
