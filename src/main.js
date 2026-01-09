@@ -33,4 +33,47 @@ document.addEventListener('DOMContentLoaded', () => {
             burger.classList.remove('active');
         });
     });
+    lucide.createIcons();
+
+    // --- GSAP + SplitType Hero Animation ---
+
+    // 1. Разбиваем текст на слова и символы
+    const splitTitle = new SplitType('.hero__title', { types: 'words, chars' });
+
+    // 2. Создаем Timeline для последовательной анимации
+    const tl = gsap.timeline({ defaults: { ease: 'power4.out', duration: 1.2 } });
+
+    tl.from('.hero__tag', {
+        y: 20,
+        opacity: 0,
+        duration: 0.8
+    })
+    .from(splitTitle.chars, {
+        y: 100,
+        opacity: 0,
+        stagger: 0.02, // Задержка между появлением символов
+        rotateX: -90, // Эффект вращения
+        transformOrigin: '0% 50% -50',
+    }, '-=0.6') // Запускаем раньше, чем закончится предыдущая анимация
+    .from('.hero__description', {
+        y: 30,
+        opacity: 0,
+        duration: 1
+    }, '-=1')
+    .from('.hero__actions', {
+        y: 20,
+        opacity: 0,
+        duration: 0.8
+    }, '-=0.8')
+    .from('.hero__visual', {
+        scale: 0.9,
+        opacity: 0,
+        duration: 1.5,
+        ease: 'back.out(1.2)'
+    }, '-=1.2'); // Визуал появляется параллельно с текстом
+
+    // Очистка стилей SplitType после анимации (для доступности и ресайза)
+    tl.call(() => {
+        splitTitle.revert();
+    });
 });
